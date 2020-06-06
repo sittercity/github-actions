@@ -1,0 +1,11 @@
+name: 'Flyway'
+description: 'Database migrations made easy via https://flywaydb.org'
+inputs:
+  args:  # id of input
+    description: 'The flyway command to execute'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.args }}

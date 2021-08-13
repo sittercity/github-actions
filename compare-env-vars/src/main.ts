@@ -61,6 +61,8 @@ async function run(): Promise<void> {
     if (secretKeys.length !== envFileKeys.length) {
       let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
       let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
+      core.info(`localMissing = ${localMissing.join(',')}`);
+      core.info(`secretsMissing = ${secretsMissing.join(',')}`);
 
       let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager%0AIf possible, ensure the .env file matches prod-services secrets before merging.";
 

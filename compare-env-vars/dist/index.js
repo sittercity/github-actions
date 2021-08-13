@@ -4174,17 +4174,19 @@ function run() {
             }));
             const secretKeys = Object.keys(Object.assign({}, ...secrets));
             const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync('./.env')));
+            core.info(`secretKeys = ${secretKeys.join(',')}`);
+            core.info(`envFileKeys = ${envFileKeys.join(',')}`);
             if (secretKeys.length !== envFileKeys.length) {
                 let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
                 let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
                 core.info(`localMissing = ${localMissing.join(',')}`);
                 core.info(`secretsMissing = ${secretsMissing.join(',')}`);
-                let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager%0AIf possible, ensure the .env file matches prod-services secrets before merging.";
+                let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager\nIf possible, ensure the .env file matches prod-services secrets before merging.";
                 if (localMissing.length > 0) {
-                    warningMessage += `%0ALocal is missing env vars: ${localMissing.join(',')}`;
+                    warningMessage += `\nLocal is missing env vars: ${localMissing.join(',')}`;
                 }
                 if (secretsMissing.length > 0) {
-                    warningMessage += `%0ASecret manager is missing env vars: ${secretsMissing.join(',')}`;
+                    warningMessage += `\nSecret manager is missing env vars: ${secretsMissing.join(',')}`;
                 }
                 core.setOutput('warning_message', warningMessage);
                 core.warning(warningMessage);

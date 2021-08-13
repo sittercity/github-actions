@@ -43,7 +43,9 @@ async function run(): Promise<void> {
     const secretsRefs = parseSecretsRefs(secretsInput);
 
     // Access and export each secret.
-    const secrets = await secretsRefs.map(async (ref) => {
+    const secrets = [];
+
+    for (const ref of secretsRefs) {
       const value = await client.accessSecret(ref.selfLink());
 
       // Split multiline secrets by line break and mask each line.
@@ -52,8 +54,8 @@ async function run(): Promise<void> {
 
       core.setOutput(ref.output, value);
 
-      return JSON.parse(value);
-    });
+      secrets.push(JSON.parse(value));
+    }
 
     const secretKeys = Object.keys(Object.assign({}, ...secrets));
     const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync('./.env')));

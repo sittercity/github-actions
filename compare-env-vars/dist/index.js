@@ -4164,14 +4164,15 @@ function run() {
             // Parse all the provided secrets into references.
             const secretsRefs = parseSecretsRefs(secretsInput);
             // Access and export each secret.
-            const secrets = yield secretsRefs.map((ref) => __awaiter(this, void 0, void 0, function* () {
+            const secrets = [];
+            for (const ref of secretsRefs) {
                 const value = yield client.accessSecret(ref.selfLink());
                 // Split multiline secrets by line break and mask each line.
                 // Read more here: https://github.com/actions/runner/issues/161
                 value.split(/\r\n|\r|\n/g).forEach((line) => core.setSecret(line));
                 core.setOutput(ref.output, value);
-                return JSON.parse(value);
-            }));
+                secrets.push(JSON.parse(value));
+            }
             const secretKeys = Object.keys(Object.assign({}, ...secrets));
             const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync('./.env')));
             core.info(`secretKeys = ${secretKeys.join(',')}`);

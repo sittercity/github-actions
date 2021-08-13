@@ -1,0 +1,34 @@
+name: 'Validate env vars'
+description: 'Grabs env vars from .env and secret manager and compares them'
+inputs:
+  credentials:  # id of input
+    description: 'GCP credentials'
+    required: true
+  secrets:
+    description: 'List of secrets to pull from'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Pull secrets from secret manager
+      id: secrets
+      uses: google-github-actions/get-secretmanager-secrets@main
+      with:
+        credentials: ${{ inputs.credentials }}
+        secrets: |-
+          empire-rpc-secrets:${{ env.GCP_PROJECT_ID }}/empire-rpc
+          empire-grpc-secrets:${{ env.GCP_PROJECT_ID }}/empire-grpc
+
+    - id: validate-env
+      name: Validate .env against secrets
+      env:
+        EMPIRE_RPC_SECRETS: ${{ steps.secrets.outputs.empire-rpc-secrets }}
+        EMPIRE_GRPC_SECRETS: ${{ steps.secrets.outputs.empire-grpc-secrets }}
+      run: |
+        ./bin/validate-env-vars.rb "$EMPIRE_RPC_SECRETS" "$EMPIRE_GRPC_SECRETS"
+
+    - uses: mshick/add-pr-comment@v1
+      if: ${{ steps.validate-env.outputs.warning_message }}
+      with:
+        message: ${{ steps.validate-env.outputs.warning_message }}
+        repo-token: ${{ env.BUNDLER_ACCESS_TOKEN }}

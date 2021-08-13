@@ -1,6 +1,8 @@
 import * as core from '@actions/core';
 import { Client } from './client';
 import { Reference } from './reference';
+import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 
 /**
  * Accepts the actions list of secrets and parses them as References.
@@ -53,7 +55,29 @@ async function run(): Promise<void> {
       return JSON.parse(value);
     });
 
-    // const consolidatedSecret = Object.assign({}, ...secrets);
+    const secretKeys = Object.keys(Object.assign({}, ...secrets));
+    const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync('./.env')));
+
+    if (secretKeys.length !== envFileKeys.length) {
+      let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
+      let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
+
+      let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager%0AIf possible, ensure the .env file matches prod-services secrets before merging.";
+
+      if (localMissing.length > 0) {
+        warningMessage += `%0ALocal is missing env vars: ${localMissing.join(',')}`;
+      }
+
+      if (secretsMissing.length > 0) {
+        warningMessage += `%0ASecret manager is missing env vars: ${secretsMissing.join(',')}`;
+      }
+
+      core.setOutput('warning_message', warningMessage);
+
+      core.warning(warningMessage);
+    } else {
+      core.info('✅ .env var file matches secrets in prod-services secret manager. Nice!');
+    }
   } catch (error) {
     core.setFailed(error.message);
   }

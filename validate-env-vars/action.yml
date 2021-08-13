@@ -13,6 +13,8 @@ runs:
     - name: Pull secrets from secret manager
       id: secrets
       uses: google-github-actions/get-secretmanager-secrets@main
+      env:
+        GCP_SECRETS: ${{ inputs.secrets }}
       with:
         credentials: ${{ inputs.credentials }}
         secrets: |-

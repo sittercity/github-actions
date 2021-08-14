@@ -1,0 +1,43 @@
+name: github-actions branch
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create tag
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const fs = require('fs');
+
+            const version = fs.readFileSync('./.version').toString().trim();
+
+            const responseTags = await github.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            })
+
+            const tags = responseTags.data.map(tag => tag.name);
+            const existingTags = tags.filter(tag => tag == version);
+
+            if (existingTags.length) {
+              core.setFailed(`Tag ${version} already exists. Ensure you increment the version within the .version file`);
+              return;
+            }
+
+            const alphaVersion = `${version}-alpha.${context.issue.number}.`;
+            const usedAlphaNumbers = tags.filter(tag => tag.startsWith(alphaVersion)).map(tag => parseInt(tag.replace(alphaVersion, ''), 10)).sort();
+            const newVersion = usedAlphaNumbers.length ? (usedAlphaNumbers[usedAlphaNumbers.length - 1] + 1) : 1;
+
+            const response = await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${alphaVersion}${newVersion}`,
+              sha: context.sha
+            })
+
+            console.log(`Created tag: ${alphaVersion}${newVersion}`);

@@ -1,0 +1,18 @@
+name: 'Validate env vars'
+description: 'Compare env vars in .env against secret manager and comments on github PR if there is a mismatch'
+inputs:
+  secrets:
+    description: 'The secrets to pull from secret manager. There can be more than 1.'
+    required: true
+  credentials:  # id of input
+    description: 'GCP credentials'
+    required: true
+  github-token:
+    description: 'Github token used to post comment on PR'
+    required: true
+  gcp-project-id:
+    description: 'Specifies which GCP project to use'
+    required: true
+runs:
+  using: node12
+  main: dist/index.js

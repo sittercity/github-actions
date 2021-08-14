@@ -17,14 +17,6 @@ jobs:
 
             const version = fs.readFileSync('./.version').toString().trim();
 
-            const responseTags = await github.repos.listTags({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              per_page: 100,
-            })
-
-            const tags = responseTags.data.map(tag => tag.name);
-
             const mergedPullRequestsResponse = await github.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -43,6 +35,14 @@ jobs:
               return;
             }
 
+            const responseTags = await github.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            })
+
+            const tags = responseTags.data.map(tag => tag.name);
+
             const alphaVersion = `${version}-alpha.${mergedPullRequest.number}.`;
             const alphaTagsToBeDeleted = tags.filter(tag => tag.startsWith(alphaVersion));
 
@@ -57,5 +57,12 @@ jobs:
               console.log(`Deleted tag: ${tag}`);
             }
 
-            console.log('Finished')
+            const response = await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${version}`,
+              sha: context.sha
+            });
+
+            console.log(`Created tag: ${version}`);
 

@@ -77,7 +77,7 @@ async function run(): Promise<void> {
 
       core.setOutput('warning_message', warningMessage);
 
-      await comment(warningMessage, core.getInput('token'));
+      await comment(warningMessage, core.getInput('github-token'));
 
       core.warning(warningMessage);
     } else {

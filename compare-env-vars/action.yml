@@ -7,6 +7,9 @@ inputs:
   credentials:  # id of input
     description: 'GCP credentials'
     required: true
+  github-token:
+    description: 'Github token used to post comment on PR'
+    required: true
 runs:
   using: node12
   main: dist/index.js

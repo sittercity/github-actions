@@ -4383,7 +4383,7 @@ function run() {
                     warningMessage += `\nSecret manager is missing env vars: ${secretsMissing.join(',')}`;
                 }
                 core.setOutput('warning_message', warningMessage);
-                yield pr_1.comment(warningMessage, core.getInput('token'));
+                yield pr_1.comment(warningMessage, core.getInput('github-token'));
                 core.warning(warningMessage);
             }
             else {

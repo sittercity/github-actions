@@ -112,14 +112,14 @@ export const comment = async (message: string, repoToken: string): Promise<void>
 
     if (isMessagePresent(message, comments)) {
       core.info('the issue already contains an identical message')
+    } else {
+      await octokit.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        body: message,
+      })
     }
-
-    await octokit.rest.issues.createComment({
-      owner,
-      repo,
-      issue_number: issueNumber,
-      body: message,
-    })
 
     core.setOutput('comment-created', 'true')
   } catch (error) {

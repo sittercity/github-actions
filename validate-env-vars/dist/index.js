@@ -46004,12 +46004,14 @@ const comment = (message, repoToken) => __awaiter(void 0, void 0, void 0, functi
         if (isMessagePresent(message, comments)) {
             core.info('the issue already contains an identical message');
         }
-        yield octokit.rest.issues.createComment({
-            owner,
-            repo,
-            issue_number: issueNumber,
-            body: message,
-        });
+        else {
+            yield octokit.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: message,
+            });
+        }
         core.setOutput('comment-created', 'true');
     }
     catch (error) {

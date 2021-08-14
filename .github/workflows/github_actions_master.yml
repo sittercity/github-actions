@@ -62,7 +62,8 @@ jobs:
               sha: context.sha
             });
 
-            const majorVersion = version.split('.')[0];
+            const versions = version.split('.');
+            const majorVersion = versions[0];
 
             const majorTag = tags.find(tag => tag == majorVersion);
 
@@ -81,5 +82,24 @@ jobs:
               sha: context.sha,
             });
 
+            const majorMinorVersion = `${versions[0]}.${versions[1]}`;
+            const majorMinorTag = tags.find(tag => tag == majorMinorVersion);
+
+            if (majorMinorTag) {
+              await github.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${majorMinorVersion}`,
+              })
+            }
+
+            await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${majorMinorVersion}`,
+              sha: context.sha,
+            });
+
             console.log(`Created tag: ${version}`);
             console.log(`Created tag: ${majorVersion}`);
+            console.log(`Created tag: ${majorMinorVersion}`);

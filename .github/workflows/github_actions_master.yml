@@ -46,7 +46,7 @@ jobs:
             for (const tag of alphaTagsToBeDeleted) {
               console.log(`Try to delete tag: ${tag}`);
 
-              const response = await github.git.deleteRef({
+              await github.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: `tags/${tag}`
@@ -55,12 +55,31 @@ jobs:
               console.log(`Deleted tag: ${tag}`);
             }
 
-            const response = await github.git.createRef({
+            await github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/tags/${version}`,
               sha: context.sha
             });
 
-            console.log(`Created tag: ${version}`);
+            const majorVersion = version.split('.')[0];
 
+            const majorTag = tags.filter(tag => tag == majorVersion);
+
+            if (majorTag) {
+              await github.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${majorTag}`
+              })
+            }
+
+            await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${majorTag}`,
+              sha: context.sha
+            });
+
+            console.log(`Created tag: ${version}`);
+            console.log(`Created tag: ${majorTag}`);

@@ -13,7 +13,7 @@ jobs:
           script: |
             const fs = require('fs');
 
-            const version = fs.readFileSync('./.version').toString();
+            const version = fs.readFileSync('./.version').toString().trim();
             const alphaVersion = `${version}-alpha.${context.issue.number}`;
 
             github.git.createRef({

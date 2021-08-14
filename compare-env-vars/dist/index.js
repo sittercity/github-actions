@@ -4190,7 +4190,8 @@ function run() {
                     warningMessage += `\nSecret manager is missing env vars: ${secretsMissing.join(',')}`;
                 }
                 core.setOutput('warning_message', warningMessage);
-                core.warning(warningMessage);
+                // TODO: Change back before finishing: core.warning(warningMessage);
+                core.setFailed(warningMessage);
             }
             else {
                 core.info('✅ .env var file matches secrets in prod-services secret manager. Nice!');

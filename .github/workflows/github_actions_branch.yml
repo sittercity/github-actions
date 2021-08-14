@@ -10,7 +10,10 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const fs = __original_require__('fs');
+            const fs = require('fs');
+            const version = require('./.version');
+
+            console.log('version = ', version);
 
             console.log(process.cwd());
 

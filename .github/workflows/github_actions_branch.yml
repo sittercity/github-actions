@@ -11,5 +11,8 @@ jobs:
         with:
           script: |
             const fs = require('fs');
+
+            const version = fs.readFileSync('./.version');
+            console.log("version number: ", version);
             console.log('hello there');
             console.log(`Pull request: ${context.issue.number}`);

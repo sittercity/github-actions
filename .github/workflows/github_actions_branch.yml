@@ -14,6 +14,11 @@ jobs:
             const fs = require('fs');
 
             const version = fs.readFileSync('./.version').toString();
-            console.log("version number: ", version);
-            console.log('hello there');
-            console.log(`Pull request: ${context.issue.number}`);
+            const alphaVersion = `${version}-alpha.${context.issue.number}`;
+
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${alphaVersion}`,
+              sha: context.sha
+            })

@@ -21,9 +21,17 @@ jobs:
               per_page: 100,
             })
 
-            const tags = responseTags.data.map(tag => tag.name);
-            console.log('tags', tags);
+            const mergedPullRequests = await github.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              direction: 'desc',
+              state: 'closed',
+              per_page: 1,
+            });
 
+            console.log('mergedPullRequests', mergedPullRequests);
+
+            const tags = responseTags.data.map(tag => tag.name);
             const existingTags = tags.filter(tag => tag == version);
 
             if (existingTags.length) {
@@ -35,11 +43,12 @@ jobs:
             const usedAlphaNumbers = tags.filter(tag => tag.startsWith(alphaVersion)).map(tag => parseInt(tag.replace(alphaVersion, ''), 10)).sort();
             const newVersion = usedAlphaNumbers.length ? usedAlphaNumbers[usedAlphaNumbers.length - 1] : 1;
 
-            const response = github.git.createRef({
+            const response = await github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/tags/${alphaVersion}${newVersion}`,
               sha: context.sha
             })
 
-            console.log('response', response)
+            console.log('response', response);
+            console.log(`Created tag: ${alphaVersion}${newVersion}`);

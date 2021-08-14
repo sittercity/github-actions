@@ -4334,11 +4334,11 @@ const pr_1 = __webpack_require__(961);
  * @returns Array of References for each secret, in the same order they were
  * given.
  */
-function parseSecretsRefs(secretsInput) {
+function parseSecretsRefs(project, secretsInput) {
     const secrets = new Array();
     for (const line of secretsInput.split(`\n`)) {
         for (const piece of line.split(',')) {
-            secrets.push(new reference_1.Reference(piece.trim()));
+            secrets.push(new reference_1.Reference(project, piece.trim()));
         }
     }
     return secrets;
@@ -4354,12 +4354,13 @@ function run() {
             const secretsInput = core.getInput('secrets', { required: true });
             // Get credentials, if any.
             const credentials = core.getInput('credentials');
+            const gcpProjectId = core.getInput('gcp-project-id');
             // Create an API client.
             const client = new client_1.Client({
                 credentials: credentials,
             });
             // Parse all the provided secrets into references.
-            const secretsRefs = parseSecretsRefs(secretsInput);
+            const secretsRefs = parseSecretsRefs(gcpProjectId, secretsInput);
             // Access and export each secret.
             const secrets = [];
             for (const ref of secretsRefs) {
@@ -4375,7 +4376,7 @@ function run() {
             if (secretKeys.length !== envFileKeys.length) {
                 let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
                 let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
-                let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager. If possible, ensure the .env file matches prod-services secrets before merging.";
+                let warningMessage = `#### ⚠️ Warning: There is a mismatch between local .env and ${gcpProjectId} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
                 if (localMissing.length > 0) {
                     warningMessage += `\n- Local is missing env vars: ${localMissing.join(',')}`;
                 }
@@ -4387,7 +4388,7 @@ function run() {
                 core.warning(warningMessage);
             }
             else {
-                core.info('✅ .env var file matches secrets in prod-services secret manager. Nice!');
+                core.info(`✅ .env var file matches secrets in ${gcpProjectId} secret manager. Nice!`);
             }
         }
         catch (error) {
@@ -39227,47 +39228,11 @@ exports.Reference = void 0;
  * @returns Reference
  */
 class Reference {
-    constructor(s) {
-        const sParts = s.split(':');
-        if (sParts.length < 2) {
-            throw new TypeError(`Invalid reference "${s}" - missing destination`);
-        }
-        this.output = sParts[0].trim();
-        const ref = sParts.slice(1).join(':');
-        const refParts = ref.split('/');
-        switch (refParts.length) {
-            // projects/<p>/secrets/<s>/versions/<v>
-            case 6: {
-                this.project = refParts[1];
-                this.name = refParts[3];
-                this.version = refParts[5];
-                break;
-            }
-            // projects/<p>/secrets/<s>
-            case 4: {
-                this.project = refParts[1];
-                this.name = refParts[3];
-                this.version = 'latest';
-                break;
-            }
-            // <p>/<s>/<v>
-            case 3: {
-                this.project = refParts[0];
-                this.name = refParts[1];
-                this.version = refParts[2];
-                break;
-            }
-            // <p>/<s>
-            case 2: {
-                this.project = refParts[0];
-                this.name = refParts[1];
-                this.version = 'latest';
-                break;
-            }
-            default: {
-                throw new TypeError(`Invalid reference "${s}" - unknown format`);
-            }
-        }
+    constructor(project, secret) {
+        this.output = `${project}-${secret}`;
+        this.project = project;
+        this.name = secret;
+        this.version = 'latest';
     }
     /**
      * Returns the full GCP self link.

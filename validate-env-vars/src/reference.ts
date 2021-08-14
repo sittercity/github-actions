@@ -15,49 +15,11 @@
   readonly name: string;
   readonly version: string;
 
-  constructor(s: string) {
-    const sParts = s.split(':');
-    if (sParts.length < 2) {
-      throw new TypeError(`Invalid reference "${s}" - missing destination`);
-    }
-
-    this.output = sParts[0].trim();
-
-    const ref = sParts.slice(1).join(':');
-    const refParts = ref.split('/');
-    switch (refParts.length) {
-      // projects/<p>/secrets/<s>/versions/<v>
-      case 6: {
-        this.project = refParts[1];
-        this.name = refParts[3];
-        this.version = refParts[5];
-        break;
-      }
-      // projects/<p>/secrets/<s>
-      case 4: {
-        this.project = refParts[1];
-        this.name = refParts[3];
-        this.version = 'latest';
-        break;
-      }
-      // <p>/<s>/<v>
-      case 3: {
-        this.project = refParts[0];
-        this.name = refParts[1];
-        this.version = refParts[2];
-        break;
-      }
-      // <p>/<s>
-      case 2: {
-        this.project = refParts[0];
-        this.name = refParts[1];
-        this.version = 'latest';
-        break;
-      }
-      default: {
-        throw new TypeError(`Invalid reference "${s}" - unknown format`);
-      }
-    }
+  constructor(project: string, secret: string) {
+    this.output = `${project}-${secret}`;
+    this.project = project;
+    this.name = secret;
+    this.version = 'latest';
   }
 
   /**

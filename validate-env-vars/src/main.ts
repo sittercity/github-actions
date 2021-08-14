@@ -13,11 +13,11 @@ import { comment } from './pr';
  * @returns Array of References for each secret, in the same order they were
  * given.
  */
-function parseSecretsRefs(secretsInput: string): Reference[] {
+function parseSecretsRefs(project: string, secretsInput: string): Reference[] {
   const secrets = new Array<Reference>();
   for (const line of secretsInput.split(`\n`)) {
     for (const piece of line.split(',')) {
-      secrets.push(new Reference(piece.trim()));
+      secrets.push(new Reference(project, piece.trim()));
     }
   }
   return secrets;
@@ -34,6 +34,7 @@ async function run(): Promise<void> {
 
     // Get credentials, if any.
     const credentials = core.getInput('credentials');
+    const gcpProjectId = core.getInput('gcp-project-id');
 
     // Create an API client.
     const client = new Client({
@@ -41,7 +42,7 @@ async function run(): Promise<void> {
     });
 
     // Parse all the provided secrets into references.
-    const secretsRefs = parseSecretsRefs(secretsInput);
+    const secretsRefs = parseSecretsRefs(gcpProjectId ,secretsInput);
 
     // Access and export each secret.
     const secrets = [];
@@ -65,7 +66,7 @@ async function run(): Promise<void> {
       let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
       let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
 
-      let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager. If possible, ensure the .env file matches prod-services secrets before merging.";
+      let warningMessage = `#### ⚠️ Warning: There is a mismatch between local .env and ${gcpProjectId} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
 
       if (localMissing.length > 0) {
         warningMessage += `\n- Local is missing env vars: ${localMissing.join(',')}`;
@@ -81,7 +82,7 @@ async function run(): Promise<void> {
 
       core.warning(warningMessage);
     } else {
-      core.info('✅ .env var file matches secrets in prod-services secret manager. Nice!');
+      core.info(`✅ .env var file matches secrets in ${gcpProjectId} secret manager. Nice!`);
     }
   } catch (error) {
     core.setFailed(error.message);

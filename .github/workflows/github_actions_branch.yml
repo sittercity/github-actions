@@ -21,7 +21,7 @@ jobs:
               per_page: 100,
             })
 
-            const tags = responseTags['data'];
+            const tags = responseTags.data.map(tag => tag.name);
             console.log('tags', tags);
 
             const existingTags = tags.filter(tag => tag == version);

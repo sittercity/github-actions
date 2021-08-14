@@ -4375,12 +4375,12 @@ function run() {
             if (secretKeys.length !== envFileKeys.length) {
                 let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
                 let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
-                let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager\nIf possible, ensure the .env file matches prod-services secrets before merging.";
+                let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager. If possible, ensure the .env file matches prod-services secrets before merging.";
                 if (localMissing.length > 0) {
-                    warningMessage += `\nLocal is missing env vars: ${localMissing.join(',')}`;
+                    warningMessage += `\n- Local is missing env vars: ${localMissing.join(',')}`;
                 }
                 if (secretsMissing.length > 0) {
-                    warningMessage += `\nSecret manager is missing env vars: ${secretsMissing.join(',')}`;
+                    warningMessage += `\n- Secret manager is missing env vars: ${secretsMissing.join(',')}`;
                 }
                 core.setOutput('warning_message', warningMessage);
                 yield pr_1.comment(warningMessage, core.getInput('github-token'));
@@ -46031,7 +46031,7 @@ const comment = (message, repoToken) => __awaiter(void 0, void 0, void 0, functi
             return;
         }
         const octokit = github.getOctokit(repoToken);
-        const { data: comments } = yield octokit.issues.listComments({
+        const { data: comments } = yield octokit.rest.issues.listComments({
             owner,
             repo,
             issue_number: issueNumber,
@@ -46039,7 +46039,7 @@ const comment = (message, repoToken) => __awaiter(void 0, void 0, void 0, functi
         if (isMessagePresent(message, comments)) {
             core.info('the issue already contains an identical message');
         }
-        yield octokit.issues.createComment({
+        yield octokit.rest.issues.createComment({
             owner,
             repo,
             issue_number: issueNumber,

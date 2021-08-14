@@ -65,14 +65,14 @@ async function run(): Promise<void> {
       let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
       let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
 
-      let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager\nIf possible, ensure the .env file matches prod-services secrets before merging.";
+      let warningMessage = "#### ⚠️ Warning: There is a mismatch between local .env and prod-services secret manager. If possible, ensure the .env file matches prod-services secrets before merging.";
 
       if (localMissing.length > 0) {
-        warningMessage += `\nLocal is missing env vars: ${localMissing.join(',')}`;
+        warningMessage += `\n- Local is missing env vars: ${localMissing.join(',')}`;
       }
 
       if (secretsMissing.length > 0) {
-        warningMessage += `\nSecret manager is missing env vars: ${secretsMissing.join(',')}`;
+        warningMessage += `\n- Secret manager is missing env vars: ${secretsMissing.join(',')}`;
       }
 
       core.setOutput('warning_message', warningMessage);

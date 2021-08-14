@@ -102,19 +102,19 @@ export const comment = async (message: string, repoToken: string): Promise<void>
       return
     }
 
-    const octokit: any = github.getOctokit(repoToken)
+    const octokit = github.getOctokit(repoToken)
 
-    const {data: comments} = await octokit.issues.listComments({
+    const {data: comments} = await octokit.rest.issues.listComments({
       owner,
       repo,
       issue_number: issueNumber,
-    })
+    });
 
     if (isMessagePresent(message, comments)) {
       core.info('the issue already contains an identical message')
     }
 
-    await octokit.issues.createComment({
+    await octokit.rest.issues.createComment({
       owner,
       repo,
       issue_number: issueNumber,

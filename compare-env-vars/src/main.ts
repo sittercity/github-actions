@@ -80,8 +80,7 @@ async function run(): Promise<void> {
 
       core.setOutput('warning_message', warningMessage);
 
-      // TODO: Change back before finishing: core.warning(warningMessage);
-      core.setFailed(warningMessage);
+      core.warning(warningMessage);
     } else {
       core.info('✅ .env var file matches secrets in prod-services secret manager. Nice!');
     }

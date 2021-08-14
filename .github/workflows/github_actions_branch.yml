@@ -1,0 +1,14 @@
+name: github-actions branch
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    steps:
+      - name: Create tag
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const fs = require('fs');
+            console.log('hello there');

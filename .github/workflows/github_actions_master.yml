@@ -64,13 +64,13 @@ jobs:
 
             const majorVersion = version.split('.')[0];
 
-            const majorTag = tags.filter(tag => tag == majorVersion);
+            const majorTag = tags.find(tag => tag == majorVersion);
 
             if (majorTag) {
               await github.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                ref: `tags/${majorTag}`
+                ref: `tags/${majorTag}`,
               })
             }
 
@@ -78,7 +78,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/tags/${majorTag}`,
-              sha: context.sha
+              sha: context.sha,
             });
 
             console.log(`Created tag: ${version}`);

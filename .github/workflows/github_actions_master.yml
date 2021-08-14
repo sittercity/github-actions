@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@v2
-      - name: Create tag
+      - name: Create tag and clean up alpha tags
         uses: actions/github-script@v4
         with:
           script: |

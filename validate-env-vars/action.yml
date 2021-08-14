@@ -1,8 +1,8 @@
-name: 'Compare env vars'
-description: 'Compare env vars in .env and inputted secrets and writes message to github PR if there is a mismatch'
+name: 'Validate env vars'
+description: 'Compare env vars in .env against secret manager and comments on github PR if there is a mismatch'
 inputs:
   secrets:
-    description: 'The secrets to pull from prod-services secret manager. There can be more than 1.'
+    description: 'The secrets to pull from secret manager. There can be more than 1.'
     required: true
   credentials:  # id of input
     description: 'GCP credentials'

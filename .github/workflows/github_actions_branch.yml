@@ -14,12 +14,28 @@ jobs:
             const fs = require('fs');
 
             const version = fs.readFileSync('./.version').toString().trim();
-            const alphaVersion = `${version}-alpha.${context.issue.number}`;
+
+            const tags = github.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            })
+
+            const existingTags = tags.filter(tag => tag == version);
+
+            if (existingTags.length) {
+              core.setFailed(`Tag ${version} already exists. Ensure you increment the version within the .version file`);
+              return;
+            }
+
+            const alphaVersion = `${version}-alpha.${context.issue.number}.`;
+            const usedAlphaNumbers = tags.filter(tag => tag.startsWith(alphaVersion)).map(tag => parseInt(tag.replace(alphaVersion, ''), 10)).sort();
+            const newVersion = usedAlphaNumbers.length ? usedAlphaNumbers[usedAlphaNumbers.length - 1] : 1;
 
             const response = github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: `refs/tags/${alphaVersion}`,
+              ref: `refs/tags/${alphaVersion}${newVersion}`,
               sha: context.sha
             })
 

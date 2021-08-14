@@ -69,11 +69,11 @@ async function run(): Promise<void> {
       let warningMessage = `#### ⚠️ Warning: There is a mismatch between local .env and ${gcpProjectId} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
 
       if (localMissing.length > 0) {
-        warningMessage += `\n- Local is missing env vars: ${localMissing.join(',')}`;
+        warningMessage += `\n- Local is missing env vars:\n    - ${localMissing.join('\n    - ')}`;
       }
 
       if (secretsMissing.length > 0) {
-        warningMessage += `\n- Secret manager is missing env vars: ${secretsMissing.join(',')}`;
+        warningMessage += `\n- Secret manager is missing env vars:\n    - ${secretsMissing.join('\n    - ')}`;
       }
 
       core.setOutput('warning_message', warningMessage);

@@ -6,24 +6,14 @@ jobs:
   build:
     runs-on: ubuntu-16.04
     steps:
+      - uses: actions/checkout@v2
       - name: Create tag
         uses: actions/github-script@v4
         with:
           script: |
             const fs = require('fs');
-            const version = require('./.version');
 
-            console.log('version = ', version);
-
-            console.log(process.cwd());
-
-            fs.readdir('./', (err, files) => {
-              files.forEach(file => {
-                console.log(file);
-              });
-            });
-
-            //const version = fs.readFileSync('./.version');
-            //console.log("version number: ", version);
+            const version = fs.readFileSync('./.version');
+            console.log("version number: ", version);
             console.log('hello there');
             console.log(`Pull request: ${context.issue.number}`);

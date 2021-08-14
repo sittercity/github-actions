@@ -25,10 +25,7 @@ jobs:
               per_page: 20,
             });
 
-            console.log(`current sha: ${context.sha}`)
             const mergedPullRequest = mergedPullRequestsResponse.data.find(pr => pr.merge_commit_sha == context.sha);
-
-            console.log('mergedPullRequest', mergedPullRequest);
 
             if (!mergedPullRequest) {
               core.setFailed('Pull request does not exist');
@@ -47,13 +44,14 @@ jobs:
             const alphaTagsToBeDeleted = tags.filter(tag => tag.startsWith(alphaVersion));
 
             for (const tag of alphaTagsToBeDeleted) {
+              console.log(`Try to delete tag: ${tag}`);
+
               const response = await github.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: `refs/tags/${tag}`
               })
 
-              console.log('response', response);
               console.log(`Deleted tag: ${tag}`);
             }
 

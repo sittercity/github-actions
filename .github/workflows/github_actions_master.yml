@@ -49,7 +49,7 @@ jobs:
               const response = await github.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                ref: `refs/tags/${tag}`
+                ref: `tags/${tag}`
               })
 
               console.log(`Deleted tag: ${tag}`);

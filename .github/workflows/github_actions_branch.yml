@@ -12,7 +12,15 @@ jobs:
           script: |
             const fs = require('fs');
 
-            const version = fs.readFileSync('./.version');
-            console.log("version number: ", version);
+            console.log(process.cwd());
+
+            fs.readdir('./', (err, files) => {
+              files.forEach(file => {
+                console.log(file);
+              });
+            });
+
+            //const version = fs.readFileSync('./.version');
+            //console.log("version number: ", version);
             console.log('hello there');
             console.log(`Pull request: ${context.issue.number}`);

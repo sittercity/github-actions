@@ -16,9 +16,11 @@ jobs:
             const version = fs.readFileSync('./.version').toString().trim();
             const alphaVersion = `${version}-alpha.${context.issue.number}`;
 
-            github.git.createRef({
+            const response = github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/tags/${alphaVersion}`,
               sha: context.sha
             })
+
+            console.log('response', response)

@@ -77,9 +77,9 @@ jobs:
             await github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: `refs/tags/${majorTag}`,
+              ref: `refs/tags/${majorVersion}`,
               sha: context.sha,
             });
 
             console.log(`Created tag: ${version}`);
-            console.log(`Created tag: ${majorTag}`);
+            console.log(`Created tag: ${majorVersion}`);

@@ -10,11 +10,11 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const fs = require('fs');
+            const fs = __original_require__('fs');
 
             console.log(process.cwd());
 
-            fs.readdir(__dirname, (err, files) => {
+            fs.readdir('./', (err, files) => {
               files.forEach(file => {
                 console.log(file);
               });

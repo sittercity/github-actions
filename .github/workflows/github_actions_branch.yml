@@ -15,11 +15,13 @@ jobs:
 
             const version = fs.readFileSync('./.version').toString().trim();
 
-            const tags = await github.repos.listTags({
+            const responseTags = await github.repos.listTags({
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100,
             })
+
+            const tags = JSON.parse(responseTags)['data'];
             console.log('tags', tags);
 
             const existingTags = tags.filter(tag => tag == version);

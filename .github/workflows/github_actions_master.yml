@@ -1,0 +1,61 @@
+name: github-actions master
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create tag
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const fs = require('fs');
+
+            const version = fs.readFileSync('./.version').toString().trim();
+
+            const responseTags = await github.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            })
+
+            const tags = responseTags.data.map(tag => tag.name);
+
+            const mergedPullRequestsResponse = await github.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              direction: 'desc',
+              state: 'closed',
+              per_page: 20,
+            });
+
+            console.log(`current sha: ${context.sha}`)
+            const mergedPullRequest = mergedPullRequestsResponse.data.find(pr => pr.merge_commit_sha == context.sha);
+
+            console.log('mergedPullRequest', mergedPullRequest);
+
+            if (!mergedPullRequest) {
+              core.setFailed('Pull request does not exist');
+              return;
+            }
+
+            const alphaVersion = `${version}-alpha.${mergedPullRequest.number}.`;
+            const alphaTagsToBeDeleted = tags.filter(tag => tag.startsWith(alphaVersion));
+
+            for (const tag of alphaTagsToBeDeleted) {
+              const response = await github.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/tags/${tag}`
+              })
+
+              console.log('response', response);
+              console.log(`Deleted tag: ${tag}`);
+            }
+
+            console.log('Finished')
+

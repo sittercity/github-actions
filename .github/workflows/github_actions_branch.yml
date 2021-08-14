@@ -21,16 +21,6 @@ jobs:
               per_page: 100,
             })
 
-            const mergedPullRequests = await github.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              direction: 'desc',
-              state: 'closed',
-              per_page: 1,
-            });
-
-            console.log('mergedPullRequests', mergedPullRequests);
-
             const tags = responseTags.data.map(tag => tag.name);
             const existingTags = tags.filter(tag => tag == version);
 
@@ -41,7 +31,7 @@ jobs:
 
             const alphaVersion = `${version}-alpha.${context.issue.number}.`;
             const usedAlphaNumbers = tags.filter(tag => tag.startsWith(alphaVersion)).map(tag => parseInt(tag.replace(alphaVersion, ''), 10)).sort();
-            const newVersion = usedAlphaNumbers.length ? usedAlphaNumbers[usedAlphaNumbers.length - 1] : 1;
+            const newVersion = usedAlphaNumbers.length ? (usedAlphaNumbers[usedAlphaNumbers.length - 1] + 1) : 1;
 
             const response = await github.git.createRef({
               owner: context.repo.owner,

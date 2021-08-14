@@ -3,6 +3,7 @@ import { Client } from './client';
 import { Reference } from './reference';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
+import { comment } from './pr';
 
 /**
  * Accepts the actions list of secrets and parses them as References.
@@ -75,6 +76,8 @@ async function run(): Promise<void> {
       }
 
       core.setOutput('warning_message', warningMessage);
+
+      await comment(warningMessage, core.getInput('token'));
 
       core.warning(warningMessage);
     } else {

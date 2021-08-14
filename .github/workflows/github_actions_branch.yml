@@ -20,6 +20,7 @@ jobs:
               repo: context.repo.repo,
               per_page: 100,
             })
+            console.log('tags', tags);
 
             const existingTags = tags.filter(tag => tag == version);
 

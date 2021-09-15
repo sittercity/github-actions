@@ -13,6 +13,9 @@ inputs:
   gcp-project-id:
     description: 'Specifies which GCP project to use'
     required: true
+  working-directory:
+    description: 'Which working-directory to use. Defaults to .'
+    required: false
 runs:
   using: node12
   main: dist/index.js

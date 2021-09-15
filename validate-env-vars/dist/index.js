@@ -4355,6 +4355,7 @@ function run() {
             // Get credentials, if any.
             const credentials = core.getInput('credentials');
             const gcpProjectId = core.getInput('gcp-project-id');
+            const workingDirectory = core.getInput('working-directory') || '.';
             // Create an API client.
             const client = new client_1.Client({
                 credentials: credentials,
@@ -4372,10 +4373,10 @@ function run() {
                 secrets.push(JSON.parse(value));
             }
             const secretKeys = Object.keys(Object.assign({}, ...secrets));
-            const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync('./.env')));
-            if (secretKeys.length !== envFileKeys.length) {
-                let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
-                let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
+            const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync(`${workingDirectory}/.env`)));
+            const localMissing = secretKeys.filter((key) => !envFileKeys.includes(key));
+            const secretsMissing = envFileKeys.filter((key) => !secretKeys.includes(key));
+            if (localMissing.length > 0 || secretsMissing.length > 0) {
                 let warningMessage = `#### ⚠️ Warning: There is a mismatch between local .env and ${gcpProjectId} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
                 if (localMissing.length > 0) {
                     warningMessage += `\n- Local is missing env vars:\n    - ${localMissing.join('\n    - ')}`;
@@ -4386,10 +4387,9 @@ function run() {
                 core.setOutput('warning_message', warningMessage);
                 yield pr_1.comment(warningMessage, core.getInput('github-token'));
                 core.warning(warningMessage);
+                return;
             }
-            else {
-                core.info(`✅ .env var file matches secrets in ${gcpProjectId} secret manager. Nice!`);
-            }
+            core.info(`✅ .env var file matches secrets in ${gcpProjectId} secret manager. Nice!`);
         }
         catch (error) {
             core.setFailed(error.message);

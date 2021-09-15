@@ -35,6 +35,7 @@ async function run(): Promise<void> {
     // Get credentials, if any.
     const credentials = core.getInput('credentials');
     const gcpProjectId = core.getInput('gcp-project-id');
+    const workingDirectory = core.getInput('working-directory') || '.';
 
     // Create an API client.
     const client = new Client({
@@ -42,7 +43,7 @@ async function run(): Promise<void> {
     });
 
     // Parse all the provided secrets into references.
-    const secretsRefs = parseSecretsRefs(gcpProjectId ,secretsInput);
+    const secretsRefs = parseSecretsRefs(gcpProjectId, secretsInput);
 
     // Access and export each secret.
     const secrets = [];
@@ -60,20 +61,30 @@ async function run(): Promise<void> {
     }
 
     const secretKeys = Object.keys(Object.assign({}, ...secrets));
-    const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync('./.env')));
+    const envFileKeys = Object.keys(
+      dotenv.parse(fs.readFileSync(`${workingDirectory}/.env`)),
+    );
 
-    if (secretKeys.length !== envFileKeys.length) {
-      let localMissing = secretKeys.filter(key => !envFileKeys.includes(key));
-      let secretsMissing = envFileKeys.filter(key => !secretKeys.includes(key));
+    const localMissing = secretKeys.filter(
+      (key: string) => !envFileKeys.includes(key),
+    );
+    const secretsMissing = envFileKeys.filter(
+      (key) => !secretKeys.includes(key),
+    );
 
+    if (localMissing.length > 0 || secretsMissing.length > 0) {
       let warningMessage = `#### ⚠️ Warning: There is a mismatch between local .env and ${gcpProjectId} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
 
       if (localMissing.length > 0) {
-        warningMessage += `\n- Local is missing env vars:\n    - ${localMissing.join('\n    - ')}`;
+        warningMessage += `\n- Local is missing env vars:\n    - ${localMissing.join(
+          '\n    - ',
+        )}`;
       }
 
       if (secretsMissing.length > 0) {
-        warningMessage += `\n- Secret manager is missing env vars:\n    - ${secretsMissing.join('\n    - ')}`;
+        warningMessage += `\n- Secret manager is missing env vars:\n    - ${secretsMissing.join(
+          '\n    - ',
+        )}`;
       }
 
       core.setOutput('warning_message', warningMessage);
@@ -81,9 +92,13 @@ async function run(): Promise<void> {
       await comment(warningMessage, core.getInput('github-token'));
 
       core.warning(warningMessage);
-    } else {
-      core.info(`✅ .env var file matches secrets in ${gcpProjectId} secret manager. Nice!`);
+
+      return;
     }
+
+    core.info(
+      `✅ .env var file matches secrets in ${gcpProjectId} secret manager. Nice!`,
+    );
   } catch (error) {
     core.setFailed(error.message);
   }

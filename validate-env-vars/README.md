@@ -10,7 +10,8 @@ Github action to compare .env file with secrets in the secret manager.
     github-token: ${{ env.BUNDLER_ACCESS_TOKEN }}
     credentials: ${{ secrets.PROD_GITHUB_SERVICE_ACCOUNT_CREDENTIALS }}
     gcp-project-id: prod-services
+    working-directory: sittercity
     secrets: |-
-      empire-rpc
-      empire-grpc
+      empire
+      sittercity
 ```

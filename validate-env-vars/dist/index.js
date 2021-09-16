@@ -4356,6 +4356,7 @@ function run() {
             const credentials = core.getInput('credentials');
             const gcpProjectId = core.getInput('gcp-project-id');
             const workingDirectory = core.getInput('working-directory') || '.';
+            const dotenvFile = core.getInput('dotenv-file') || '.env';
             // Create an API client.
             const client = new client_1.Client({
                 credentials: credentials,
@@ -4373,7 +4374,7 @@ function run() {
                 secrets.push(JSON.parse(value));
             }
             const secretKeys = Object.keys(Object.assign({}, ...secrets));
-            const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync(`${workingDirectory}/.env`)));
+            const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync(`${workingDirectory}/${dotenvFile}`)));
             const localMissing = secretKeys.filter((key) => !envFileKeys.includes(key));
             const secretsMissing = envFileKeys.filter((key) => !secretKeys.includes(key));
             if (localMissing.length > 0 || secretsMissing.length > 0) {

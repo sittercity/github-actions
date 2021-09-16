@@ -36,6 +36,7 @@ async function run(): Promise<void> {
     const credentials = core.getInput('credentials');
     const gcpProjectId = core.getInput('gcp-project-id');
     const workingDirectory = core.getInput('working-directory') || '.';
+    const dotenvFile = core.getInput('dotenv-file') || '.env';
 
     // Create an API client.
     const client = new Client({
@@ -62,7 +63,7 @@ async function run(): Promise<void> {
 
     const secretKeys = Object.keys(Object.assign({}, ...secrets));
     const envFileKeys = Object.keys(
-      dotenv.parse(fs.readFileSync(`${workingDirectory}/.env`)),
+      dotenv.parse(fs.readFileSync(`${workingDirectory}/${dotenvFile}`)),
     );
 
     const localMissing = secretKeys.filter(

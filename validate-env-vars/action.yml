@@ -16,6 +16,9 @@ inputs:
   working-directory:
     description: 'Which working-directory to use. Defaults to .'
     required: false
+  dotenv-file:
+    description: 'Name of the dotenv file. Defaults to .env'
+    required: false
 runs:
   using: node12
   main: dist/index.js

@@ -15,3 +15,6 @@ Github action to compare .env file with secrets in the secret manager.
       empire
       sittercity
 ```
+
+## Development
+Run `npm run build` before you merge as it will pick up on the `dist/index.js` that is compiled. This should be automated in the future.

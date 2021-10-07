@@ -4357,6 +4357,7 @@ function run() {
             const gcpProjectId = core.getInput('gcp-project-id');
             const workingDirectory = core.getInput('working-directory') || '.';
             const dotenvFile = core.getInput('dotenv-file') || '.env';
+            const dotenvFullPath = `${workingDirectory}/${dotenvFile}`;
             // Create an API client.
             const client = new client_1.Client({
                 credentials: credentials,
@@ -4374,13 +4375,13 @@ function run() {
                 secrets.push(JSON.parse(value));
             }
             const secretKeys = Object.keys(Object.assign({}, ...secrets));
-            const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync(`${workingDirectory}/${dotenvFile}`)));
+            const envFileKeys = Object.keys(dotenv.parse(fs.readFileSync(dotenvFullPath)));
             const localMissing = secretKeys.filter((key) => !envFileKeys.includes(key));
             const secretsMissing = envFileKeys.filter((key) => !secretKeys.includes(key));
             if (localMissing.length > 0 || secretsMissing.length > 0) {
-                let warningMessage = `#### ⚠️ Warning: There is a mismatch between local .env and ${gcpProjectId} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
+                let warningMessage = `#### ⚠️ Warning: There is a mismatch between ${dotenvFullPath} and ${gcpProjectId} ${secretsInput} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
                 if (localMissing.length > 0) {
-                    warningMessage += `\n- Local is missing env vars:\n    - ${localMissing.join('\n    - ')}`;
+                    warningMessage += `\n- ${dotenvFullPath} is missing env vars:\n    - ${localMissing.join('\n    - ')}`;
                 }
                 if (secretsMissing.length > 0) {
                     warningMessage += `\n- Secret manager is missing env vars:\n    - ${secretsMissing.join('\n    - ')}`;

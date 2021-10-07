@@ -4379,7 +4379,8 @@ function run() {
             const localMissing = secretKeys.filter((key) => !envFileKeys.includes(key));
             const secretsMissing = envFileKeys.filter((key) => !secretKeys.includes(key));
             if (localMissing.length > 0 || secretsMissing.length > 0) {
-                let warningMessage = `#### ⚠️ Warning: There is a mismatch between ${dotenvFullPath} and ${gcpProjectId} ${secretsInput} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
+                const secretsInputStr = `[${secretsInput.trim().replace(/\n/g, ',')}]`;
+                let warningMessage = `#### ⚠️ Warning: There is a mismatch between ${dotenvFullPath} and ${gcpProjectId} ${secretsInputStr} secret manager. If possible, ensure the .env file matches ${gcpProjectId} secrets before merging.`;
                 if (localMissing.length > 0) {
                     warningMessage += `\n- ${dotenvFullPath} is missing env vars:\n    - ${localMissing.join('\n    - ')}`;
                 }

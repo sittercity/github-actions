@@ -1,8 +1,11 @@
 name: 'Validate graphql schema'
-description: 'Compare schema.graphql with master branch schema.graphql and notify for breaking changes'
+description: 'Validates local graphql schema with graphql endpoint from production'
 inputs:
   schema:
     description: 'The schema file to pull from the repo'
+    required: true
+  endpoint:
+    description: 'The endpoint url for prod graphql'
     required: true
   github-token:
     description: 'Github token used to post comment on PR'

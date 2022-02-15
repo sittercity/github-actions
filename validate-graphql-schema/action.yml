@@ -1,0 +1,15 @@
+name: 'Validate graphql schema'
+description: 'Compare schema.graphql with master branch schema.graphql and notify for breaking changes'
+inputs:
+  schema:
+    description: 'The schema file to pull from the repo'
+    required: true
+  github-token:
+    description: 'Github token used to post comment on PR'
+    required: true
+  working-directory:
+    description: 'Which working-directory to use. Defaults to .'
+    required: false
+runs:
+  using: node12
+  main: dist/index.js

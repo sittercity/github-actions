@@ -66357,7 +66357,7 @@ class File extends Blob {
     //    lastModified dictionary member. If it is not provided, set d to the
     //    current date and time represented as the number of milliseconds since
     //    the Unix Epoch (which is the equivalent of Date.now() [ECMA-262]).
-    const d = options.lastModified ?? Date.now()
+    const d = options.lastModified || Date.now()
 
     // 4. Return a new File object F such that:
     // F refers to the bytes byte sequence.
@@ -66429,7 +66429,7 @@ class FileLike {
     //    lastModified dictionary member. If it is not provided, set d to the
     //    current date and time represented as the number of milliseconds since
     //    the Unix Epoch (which is the equivalent of Date.now() [ECMA-262]).
-    const d = options.lastModified ?? Date.now()
+    const d = options.lastModified || Date.now()
 
     // 4. Return a new File object F such that:
     // F refers to the bytes byte sequence.
@@ -66519,7 +66519,7 @@ class FileLike {
   }
 }
 
-module.exports = { File: globalThis.File ?? File, FileLike }
+module.exports = { File: globalThis.File || File, FileLike }
 
 
 /***/ }),
@@ -66799,7 +66799,7 @@ function makeEntry (name, value, filename) {
   return entry
 }
 
-module.exports = { FormData: globalThis.FormData ?? FormData }
+module.exports = { FormData: globalThis.FormData || FormData }
 
 
 /***/ }),
@@ -66970,7 +66970,7 @@ class Headers {
         "Failed to construct 'Headers': The provided value is not of type '(record<ByteString, ByteString> or sequence<sequence<ByteString>>"
       )
     }
-    const init = args.length >= 1 ? args[0] ?? {} : {}
+    const init = args.length >= 1 ? args[0] || {} : {}
 
     this[kHeadersList] = new HeadersList()
 
@@ -67304,7 +67304,7 @@ async function fetch (...args) {
   }
 
   const resource = args[0]
-  const init = args.length >= 1 ? args[1] ?? {} : {}
+  const init = args.length >= 1 ? args[1] || {} : {}
 
   const context = new Fetch(this)
 
@@ -67987,7 +67987,7 @@ async function schemeFetch (fetchParams) {
       return makeNetworkError('invalid path called')
     }
     case 'blob:': {
-      resolveObjectURL ??= (__nccwpck_require__(4300).resolveObjectURL)
+      resolveObjectURL ||= (__nccwpck_require__(4300).resolveObjectURL)
 
       context.on('terminated', onRequestAborted)
 
@@ -68763,7 +68763,7 @@ function httpNetworkFetch (
       destroy (err) {
         if (!this.destroyed) {
           this.destroyed = true
-          this.abort?.(err ?? new AbortError())
+          this.abort?.(err || new AbortError())
         }
       }
     }
@@ -69065,7 +69065,7 @@ function httpNetworkFetch (
               .get('content-encoding')
               ?.toLowerCase()
               .split(',')
-              .map((x) => x.trim()) ?? []
+              .map((x) => x.trim()) || []
 
           const decoders = []
 
@@ -69123,7 +69123,7 @@ function httpNetworkFetch (
             }
 
             // 5. Increase timingInfo’s decoded body size by bytes’s length.
-            timingInfo.decodedBodySize += bytes?.byteLength ?? 0
+            timingInfo.decodedBodySize += bytes?.byteLength || 0
 
             // 6. If bytes is failure, then terminate the ongoing fetch.
             if (bytes instanceof Error) {
@@ -69263,7 +69263,7 @@ class Request {
       )
     }
     const input = args[0] instanceof Request ? args[0] : toUSVString(args[0])
-    const init = args.length >= 1 ? args[1] ?? {} : {}
+    const init = args.length >= 1 ? args[1] || {} : {}
 
     // TODO
     this[kRealm] = { settingsObject: {} }
@@ -69680,7 +69680,7 @@ class Request {
 
     // 37. Let inputOrInitBody be initBody if it is non-null; otherwise
     // inputBody.
-    const inputOrInitBody = initBody ?? inputBody
+    const inputOrInitBody = initBody || inputBody
 
     // 38. If inputOrInitBody is non-null and inputOrInitBody’s source is
     // null, then:
@@ -70151,7 +70151,7 @@ class Response {
     }
 
     const body = args.length >= 1 ? args[0] : null
-    const init = args.length >= 2 ? args[1] ?? {} : {}
+    const init = args.length >= 2 ? args[1] || {} : {}
 
     // TODO
     this[kRealm] = { settingsObject: {} }
@@ -70772,10 +70772,10 @@ function coarsenedSharedCurrentTime (crossOriginIsolatedCapability) {
 // https://fetch.spec.whatwg.org/#create-an-opaque-timing-info
 function createOpaqueTimingInfo (timingInfo) {
   return {
-    startTime: timingInfo.startTime ?? 0,
+    startTime: timingInfo.startTime || 0,
     redirectStartTime: 0,
     redirectEndTime: 0,
-    postRedirectStartTime: timingInfo.startTime ?? 0,
+    postRedirectStartTime: timingInfo.startTime || 0,
     finalServiceWorkerStartTime: 0,
     finalNetworkResponseStartTime: 0,
     finalNetworkRequestStartTime: 0,

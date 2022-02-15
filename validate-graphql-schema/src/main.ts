@@ -33,7 +33,14 @@ async function run(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const changes: Change[] = diff(schema, endpoint)
-    console.log(changes)
+    console.log(changes.toString())
+
+    if (true) {
+      core.setOutput('warning_message', changes.toString())
+      await comment(changes.toString(), core.getInput('github-token'))
+      core.warning(changes.toString())
+    }
+    core.info(changes.toString())
   } catch (error) {
     core.setFailed((error as Error).message)
   }

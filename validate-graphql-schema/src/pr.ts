@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {HttpClient} from '@actions/http-client'
+import { HttpClient } from '@actions/http-client'
 import { RequestHeaders } from '@octokit/types'
 
 interface ListCommitPullsParams {
@@ -11,9 +11,9 @@ interface ListCommitPullsParams {
 }
 
 const listCommitPulls = async (
-  params: ListCommitPullsParams
+  params: ListCommitPullsParams,
 ): Promise<any | null> => {
-  const {repoToken, owner, repo, commitSha} = params
+  const { repoToken, owner, repo, commitSha } = params
 
   const http = new HttpClient('http-client-compare-env-vars')
 
@@ -24,20 +24,20 @@ const listCommitPulls = async (
 
   const body = await http.getJson<any>(
     `https://api.github.com/repos/${owner}/${repo}/commits/${commitSha}/pulls`,
-    additionalHeaders
+    additionalHeaders,
   )
 
   return body.result
 }
 
 const getIssueNumberFromCommitPullsList = (
-  commitPullsList: any
+  commitPullsList: any,
 ): number | null => (commitPullsList.length ? commitPullsList[0].number : null)
 
 const isMessagePresent = (
   message: AddPrCommentInputs['message'],
   comments: any,
-  login?: string
+  login?: string,
 ): boolean => {
   const cleanRe = new RegExp('\\R|\\s', 'g')
   const messageClean = message.replace(cleanRe, '')
@@ -60,16 +60,19 @@ interface AddPrCommentInputs {
   repoTokenUserLogin?: string
 }
 
-export const comment = async (message: string, repoToken: string): Promise<void> => {
+export const comment = async (
+  message: string,
+  repoToken: string,
+): Promise<void> => {
   try {
     if (!repoToken) {
       throw new Error(
-        'no github token provided, set one with the repo-token input or GITHUB_TOKEN env variable'
+        'no github token provided, set one with the repo-token input or GITHUB_TOKEN env variable',
       )
     }
 
     const {
-      payload: {pull_request: pullRequest, issue, repository},
+      payload: { pull_request: pullRequest, issue, repository },
       sha: commitSha,
     } = github.context
 
@@ -79,7 +82,7 @@ export const comment = async (message: string, repoToken: string): Promise<void>
       return
     }
 
-    const {full_name: repoFullName} = repository
+    const { full_name: repoFullName } = repository
     const [owner, repo] = repoFullName!.split('/')
 
     let issueNumber
@@ -90,13 +93,19 @@ export const comment = async (message: string, repoToken: string): Promise<void>
       issueNumber = pullRequest.number
     } else {
       // If this is not a pull request, attempt to find a PR matching the sha
-      const commitPullsList = await listCommitPulls({repoToken, owner, repo, commitSha})
-      issueNumber = commitPullsList && getIssueNumberFromCommitPullsList(commitPullsList)
+      const commitPullsList = await listCommitPulls({
+        repoToken,
+        owner,
+        repo,
+        commitSha,
+      })
+      issueNumber =
+        commitPullsList && getIssueNumberFromCommitPullsList(commitPullsList)
     }
 
     if (!issueNumber) {
       core.info(
-        'this action only works on issues and pull_request events or other commits associated with a pull'
+        'this action only works on issues and pull_request events or other commits associated with a pull',
       )
       core.setOutput('comment-created', 'false')
       return
@@ -104,11 +113,11 @@ export const comment = async (message: string, repoToken: string): Promise<void>
 
     const octokit = github.getOctokit(repoToken)
 
-    const {data: comments} = await octokit.rest.issues.listComments({
+    const { data: comments } = await octokit.rest.issues.listComments({
       owner,
       repo,
       issue_number: issueNumber,
-    });
+    })
 
     if (isMessagePresent(message, comments)) {
       core.info('the issue already contains an identical message')

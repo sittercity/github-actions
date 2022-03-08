@@ -1,8 +1,9 @@
 import * as core from '@actions/core'
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 import { Change, diff } from '@graphql-inspector/core'
-import { loadSchema } from '@graphql-tools/load'
+import { loadSchemaSync } from '@graphql-tools/load'
 import { UrlLoader } from '@graphql-tools/url-loader'
+import {Source, GraphQLSchema, buildClientSchema, printSchema} from 'graphql';
 
 import { comment } from './pr'
 
@@ -11,38 +12,41 @@ import { comment } from './pr'
  * primary entry point. It is documented inline.
  */
 async function run(): Promise<void> {
-  // Fetch local graphql schema file
-  const schema_path =
-    core.getInput('schema', { required: true }) || 'schema.graphql'
-  // Fetch graphql endpoint from input or set to default
-  const endpoint_path =
-    core.getInput('endpoint') || 'https://graphql.sittercity.com/graphql'
 
   try {
-    const schema = async () =>
-      await loadSchema(schema_path, {
-        loaders: [new GraphQLFileLoader()],
-      })
+    const schema = loadSchemaSync('./../schema.graphql', {
+      cwd: __dirname,
+      loaders: [new GraphQLFileLoader()],
+    })
 
     // load from endpoint
-    const endpoint = async () =>
-      await loadSchema(endpoint_path, {
-        loaders: [new UrlLoader()],
-      })
+    const endpoint = loadSchemaSync('https://graphql.sittercity.com/graphql', {
+      loaders: [new UrlLoader()],
+    })
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const changes: Change[] = diff(schema, endpoint)
-    console.log(changes.toString())
+    const changes: Change[] = await diff(endpoint, schema)
+    const messages = changes.map(({message}) => message).join('\r\n')
+    console.log(changes)
+    if (changes.length != 0) {
+      let warningMessage = 'A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n\n'
+      warningMessage += messages
+      console.log(warningMessage)
+      // core.setOutput('warning_message', warningMessage);
 
-    if (true) {
-      core.setOutput('warning_message', changes.toString())
-      await comment(changes.toString(), core.getInput('github-token'))
-      core.warning(changes.toString())
+      // await comment(warningMessage, core.getInput('github-token'));
+
+      // core.warning(warningMessage);
+
+      return;
     }
-    core.info(changes.toString())
+    console.log('tick')
+    // core.info(
+    //   '✅ Great Work! No breaking changes detected in graphql schema.',
+    // );
   } catch (error) {
-    core.setFailed((error as Error).message)
+    console.log((error as Error).message)
   }
 }
 

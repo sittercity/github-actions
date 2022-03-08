@@ -4,7 +4,7 @@
   "description": "Validates local graphql schema with graphql endpoint from production",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build -s --external='@npmcli/run-script' -o dist/index.js src/main.ts",
+    "build": "ncc build -a -e typescript --target es2015 src/main.ts",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write **/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -24,7 +24,6 @@
     "@graphql-tools/graphql-file-loader": "^7.3.3",
     "@graphql-tools/load": "^7.5.1",
     "@graphql-tools/url-loader": "^7.7.1",
-    "@npmcli/run-script": "^3.0.1",
     "@octokit/types": "^6.25.0",
     "graphql": "^15.0.0"
   },
@@ -32,12 +31,12 @@
     "@types/node": "^16.4.13",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
-    "@zeit/ncc": "^0.22.3",
+    "@vercel/ncc": "^0.33.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "prettier": "^2.3.2",
     "ts-node": "^10.2.0",
-    "typescript": "^4.3.5"
+    "typescript": "4.4.2"
   }
 }

@@ -13,17 +13,17 @@ import { comment } from './pr'
 async function run(): Promise<void> {
 
   try {
-
+    const workingDirectory = core.getInput('working-directory') || '.';
     const schema_path = core.getInput('schema', {required: true})
-  
+    const schema_full_path = `${workingDirectory}/${schema_path}`
     // Fetch graphql endpoint from input or set to default
     const endpoint_path = core.getInput('endpoint', {required: true})
 
-    const schema = loadSchemaSync(schema_path, {
+    const schema = loadSchemaSync(schema_full_path, {
       cwd: __dirname,
       loaders: [new GraphQLFileLoader()],
     })
-
+    console.log(schema)
     // load from endpoint
     const endpoint = loadSchemaSync(endpoint_path, {
       loaders: [new UrlLoader()],

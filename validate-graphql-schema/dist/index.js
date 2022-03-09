@@ -89961,13 +89961,16 @@ const pr_1 = __nccwpck_require__(4480);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const workingDirectory = core.getInput('working-directory') || '.';
             const schema_path = core.getInput('schema', { required: true });
+            const schema_full_path = `${workingDirectory}/${schema_path}`;
             // Fetch graphql endpoint from input or set to default
             const endpoint_path = core.getInput('endpoint', { required: true });
-            const schema = (0, load_1.loadSchemaSync)(schema_path, {
+            const schema = (0, load_1.loadSchemaSync)(schema_full_path, {
                 cwd: __dirname,
                 loaders: [new graphql_file_loader_1.GraphQLFileLoader()],
             });
+            console.log(schema);
             // load from endpoint
             const endpoint = (0, load_1.loadSchemaSync)(endpoint_path, {
                 loaders: [new url_loader_1.UrlLoader()],

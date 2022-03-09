@@ -10,6 +10,9 @@ inputs:
   github-token:
     description: 'Github token used to post comment on PR'
     required: true
+  working-directory:
+    description: 'Which working-directory to use. Defaults to .'
+    required: false
 runs:
   using: node16
   main: dist/index.js

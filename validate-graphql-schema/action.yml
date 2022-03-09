@@ -11,5 +11,5 @@ inputs:
     description: 'Github token used to post comment on PR'
     required: true
 runs:
-  using: node12
+  using: node16
   main: dist/index.js

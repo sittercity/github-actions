@@ -20,7 +20,6 @@ async function run(): Promise<void> {
     const endpoint_path = core.getInput('endpoint', {required: true})
 
     const schema = loadSchemaSync(schema_full_path, {
-      cwd: __dirname,
       loaders: [new GraphQLFileLoader()],
     })
     console.log(schema)

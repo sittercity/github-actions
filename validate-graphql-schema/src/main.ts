@@ -17,7 +17,7 @@ async function run(): Promise<void> {
     const schema_path = core.getInput('schema', {required: true})
   
     // Fetch graphql endpoint from input or set to default
-    const endpoint_path = core.getInput('endpoint') || 'https://graphql.sittercity.com/graphql'
+    const endpoint_path = core.getInput('endpoint', {required: true})
 
     const schema = loadSchemaSync(schema_path, {
       cwd: __dirname,

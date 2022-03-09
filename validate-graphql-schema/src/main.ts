@@ -22,7 +22,7 @@ async function run(): Promise<void> {
     const schema = loadSchemaSync(schema_full_path, {
       loaders: [new GraphQLFileLoader()],
     })
-    console.log(schema)
+
     // load from endpoint
     const endpoint = loadSchemaSync(endpoint_path, {
       loaders: [new UrlLoader()],

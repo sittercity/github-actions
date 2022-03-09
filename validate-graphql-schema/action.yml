@@ -1,0 +1,15 @@
+name: 'Validate graphql schema'
+description: 'Validates local graphql schema with graphql endpoint from production'
+inputs:
+  schema:
+    description: 'The schema file to pull from the repo'
+    required: true
+  endpoint:
+    description: 'The endpoint url for prod graphql'
+    required: true
+  github-token:
+    description: 'Github token used to post comment on PR'
+    required: true
+runs:
+  using: node12
+  main: dist/index.js

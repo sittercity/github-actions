@@ -1,4 +1,4 @@
-# Validate Env Vars
+# Validate Graphql Schema
 Github action to compare local graphql schema with prod graphql schema for notifying breaking changes.
 
 ## Usage
@@ -8,8 +8,8 @@ Github action to compare local graphql schema with prod graphql schema for notif
   uses: sittercity/github-actions/validate-graphql-schema@v1
   with:
     github-token: ${{ env.BUNDLER_ACCESS_TOKEN }}
-    schema: './empire-graphql/app/graphql/schema.graphql'
-    endpoint: 'https://graphql.sittercity.com/graphql'
+    schema: 'path for schema.graphql file'
+    endpoint: 'URL for graphql endpoint'
 ```
 
 ## Development

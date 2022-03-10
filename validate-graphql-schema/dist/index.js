@@ -89975,15 +89975,9 @@ function run() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             const changes = yield (0, core_1.diff)(endpoint, schema);
-            const messages = changes.map(({ criticality: { level }, type, path }) => {
-                if (level === 'NON_BREAKING')
-                    return;
-                return `${type}: ${path}`;
-            }).filter(element => {
-                return element !== undefined;
-            });
+            const messages = changes.filter(c => c.criticality.level !== 'NON_BREAKING').map(c => `${c.type}: ${c.path}`);
             if (messages.length != 0) {
-                let warningMessage = '#### ⚠️ Warning: A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n';
+                let warningMessage = '#### ⚠️ Warning: A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n\n - ';
                 warningMessage += messages.join('\n - ');
                 core.setOutput('warning_message', warningMessage);
                 yield (0, pr_1.comment)(warningMessage, core.getInput('github-token'));

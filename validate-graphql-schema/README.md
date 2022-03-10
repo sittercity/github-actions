@@ -10,6 +10,7 @@ Github action to compare local graphql schema with prod graphql schema for notif
     github-token: ${{ env.BUNDLER_ACCESS_TOKEN }}
     schema: 'path for schema.graphql file'
     endpoint: 'URL for graphql endpoint'
+    working-directory: 'empire-graphql'
 ```
 
 ## Development

@@ -89964,12 +89964,10 @@ function run() {
             const workingDirectory = core.getInput('working-directory') || '.';
             const schema_path = core.getInput('schema', { required: true });
             const schema_full_path = `${workingDirectory}/${schema_path}`;
-            // Fetch graphql endpoint from input or set to default
             const endpoint_path = core.getInput('endpoint', { required: true });
             const schema = (0, load_1.loadSchemaSync)(schema_full_path, {
                 loaders: [new graphql_file_loader_1.GraphQLFileLoader()],
             });
-            console.log(schema);
             // load from endpoint
             const endpoint = (0, load_1.loadSchemaSync)(endpoint_path, {
                 loaders: [new url_loader_1.UrlLoader()],
@@ -89977,9 +89975,9 @@ function run() {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             const changes = yield (0, core_1.diff)(endpoint, schema);
-            const messages = changes.map(({ message }) => message).join('\r\n');
+            const messages = changes.map(({ message }) => message).join('\n   -');
             if (changes.length != 0) {
-                let warningMessage = 'A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n\n';
+                let warningMessage = '#### ⚠️ Warning: A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n\n   -';
                 warningMessage += messages;
                 core.setOutput('warning_message', warningMessage);
                 yield (0, pr_1.comment)(warningMessage, core.getInput('github-token'));

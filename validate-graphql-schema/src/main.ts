@@ -16,7 +16,6 @@ async function run(): Promise<void> {
     const workingDirectory = core.getInput('working-directory') || '.';
     const schema_path = core.getInput('schema', {required: true})
     const schema_full_path = `${workingDirectory}/${schema_path}`
-    // Fetch graphql endpoint from input or set to default
     const endpoint_path = core.getInput('endpoint', {required: true})
 
     const schema = loadSchemaSync(schema_full_path, {
@@ -31,10 +30,10 @@ async function run(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const changes: Change[] = await diff(endpoint, schema)
-    const messages = changes.map(({message}) => message).join('\r\n')
+    const messages = changes.map(({message}) => message).join('\n   -')
 
     if (changes.length != 0) {
-      let warningMessage = 'A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n\n'
+      let warningMessage = '#### ⚠️ Warning: A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n\n   -'
       warningMessage += messages
 
       core.setOutput('warning_message', warningMessage);

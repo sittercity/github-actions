@@ -30,11 +30,16 @@ async function run(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const changes: Change[] = await diff(endpoint, schema)
-    const messages = changes.map(({message}) => message).join('\n   -')
+    const messages = changes.map(({ criticality: {level}, type, path}) => { 
+      if(level === 'NON_BREAKING') return
+      return `${type}: ${path}`
+    }).filter(element => {
+      return element !== undefined
+    })
 
-    if (changes.length != 0) {
-      let warningMessage = '#### ⚠️ Warning: A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n\n   -'
-      warningMessage += messages
+    if (messages.length != 0) {
+      let warningMessage = '#### ⚠️ Warning: A breaking change has been made to the graphql schema. Please confirm that no graphql clients still rely on the item being changed.\nHere, is the summary:\n'
+      warningMessage += messages.join('\n - ')
 
       core.setOutput('warning_message', warningMessage);
 

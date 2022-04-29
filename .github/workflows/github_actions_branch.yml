@@ -1,6 +1,9 @@
 name: github-actions branch
 
-on: [pull_request]
+on: 
+  pull_request:
+    paths:
+      - '!**.md'
 
 jobs:
   build:

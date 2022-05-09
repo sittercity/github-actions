@@ -3,8 +3,8 @@ name: github-actions master
 on:
   push:
     branches: [ master ]
-    paths:
-      - '!**.md'
+    paths-ignore:
+      - '**.md'
 
 jobs:
   build:

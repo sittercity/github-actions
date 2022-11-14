@@ -1,6 +1,6 @@
-FROM flyway/flyway:6.4.3-alpine
+FROM flyway/flyway:9.8.1-alpine
 
-LABEL version="1-6.4.3-alpine"
+LABEL version="1-9.8.1-alpine"
 LABEL repository="http://github.com/sittercity/github-actions/flyway"
 LABEL homepage="http://github.com/sittercity/github-actions/flyway"
 LABEL maintainer="Sittercity"
